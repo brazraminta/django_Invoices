@@ -1,0 +1,36 @@
+<!--/users/login.html-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+<link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+{% endblock %}
+
+{% block welcome_message %}
+    {% if user.is_authenticated %}
+        <h4>Sveiki, {{ user.username }}!</h4>
+        {% else %}
+            <h3>Sveiki, Svečias!</h3>
+        {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="login-buttons">
+        <a href="{% url 'social:begin' 'azuread-oauth2' %}">
+            <button type="button" class="btn btn-small">Prisijungti</button>
+        </a>
+        <a href="{% url 'admin:index' %}">
+            <button type="button" class="btn btn-small">Administratoriui</button>
+        </a>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("JavaScript loaded");
+        });
+    </script>
+{% endblock %}

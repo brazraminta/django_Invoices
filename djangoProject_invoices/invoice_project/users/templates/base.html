@@ -1,0 +1,49 @@
+<!--users/templates/base.html-->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UAB Indasta sąskaitų registras{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/base_style.css' %}">
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: TimesNewRoman, sans-serif;
+            background-image: url("{% static 'images/background.jpg' %}");
+            background-size: cover; /* Užtikrina, kad paveiksliukas užims visą puslapio plotą */
+            background-repeat: no-repeat; /* Neleidžia paveiksliukui kartotis */
+            background-position: center center; /* Centruoja paveiksliuką */
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+<body>
+    <header>
+        <h1>Sąskaitų valdymo sistema</h1>
+    </header>
+    <div class="welcome-message">
+        {% block welcome_message %}
+        {% endblock %}
+    </div>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <script>
+    window.addEventListener('beforeunload', function (e) {
+        navigator.sendBeacon('{% url "logout" %}');
+    });
+    </script>
+</body>
+</html>
+
+<!--emoji&symbols pasirinkimas - spausti Windows + . arba Windows + ;-->

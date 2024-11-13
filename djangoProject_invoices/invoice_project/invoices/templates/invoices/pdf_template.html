@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sąskaita faktūra</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .header, .footer {
+            text-align: center;
+            font-weight: bold;
+        }
+        .content {
+            margin: 20px;
+        }
+        .invoice-details, .buyer-details, .seller-details {
+            margin-bottom: 20px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f2f2f2;
+        }
+        .signature {
+            margin-top: 50px;
+        }
+        .signature div {
+            display: inline-block;
+            width: 45%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PVM SĄSKAITA FAKTŪRA</h1>
+        <p>Serija IND Nr. {{ invoice.invoice_no }}</p>
+        <p>{{ invoice.doc_date }}</p>
+    </div>
+
+    <div class="content">
+        <div class="seller-details">
+            <h2>Pardavėjas:</h2>
+            <p>UAB "Pardavėjas"</p>
+            <p>Įmonės kodas: 112233445</p>
+            <p>PVM mokėtojo kodas: LT112233445</p>
+            <p>Adresas: Adreso g. 19, Miestas</p>
+            <p>Bankas: AB "Bankas"</p>
+            <p>Atsiskaitomoji sąskaita: LT11 0000 2222 3333 444</p>
+        </div>
+        <div class="buyer-details">
+            <h2>Pirkėjas:</h2>
+            <p>{{ invoice.buyer }}</p>
+            <p>Įmonės kodas: {{ invoice.company_code }}</p>
+            <p>PVM mokėtojo kodas: {{ invoice.PVM_code }}</p>
+            <p>Adresas: {{ invoice.buyer_address }}</p>
+        </div>
+        <div class="invoice-details">
+            <p>Apmokėti iki: {{ invoice.pay_due }}</p>
+        </div>
+
+        <h2>Atliktų darbų sąrašas</h2>
+        <table class="table">
+            <tr>
+                <th>Eil. Nr.</th>
+                <th>Atliktų darbų pavadinimas</th>
+                <th>Mato vnt.</th>
+                <th>Kiekis</th>
+                <th>Vnt. kaina</th>
+                <th>Suma</th>
+            </tr>
+            {% for item in items %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.unit }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price }}</td>
+                <td>{{ item.total_price }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div class="invoice-summary">
+            <p>Viso suma (EUR): {{ invoice.suma_viso }}</p>
+            <p>PVM 21% (EUR): {{ invoice.pvm }}</p>
+            <p>Viso suma (su PVM, EUR): {{ invoice.suma_su_pvm }}</p>
+            <p>Mokėtina suma (EUR): {{ invoice.moketina_suma }}</p>
+            {% if invoice.PVM96_str %}
+            <p>* Pagal LR PVM įst. 96 str. taikomas atvirkštinis PVM apmokestinimas</p>
+            {% endif %}
+            <p>Suma žodžiais: {{ invoice.moketina_suma_zodziais }}</p>
+        </div>
+
+        <div class="signature">
+            <div>
+                <p>Išrašė:</p>
+                <p>{{ invoice.kas_israse }}</p>
+                <p>(pareigos, vardas, pavardė</p>
+                <p>(parašas)</p>
+            </div>
+            <div>
+                <p>Priėmė:</p>
+                <p>(pareigos, vardas, pavardė)</p>
+                <p>(parašas)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Dokumento pabaiga</p>
+    </div>
+</body>
+</html>

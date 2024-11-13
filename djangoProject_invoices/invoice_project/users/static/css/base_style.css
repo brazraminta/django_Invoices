@@ -1,0 +1,51 @@
+/* users/base_style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.welcome-message {
+    align-items: center;
+    text-align: center;
+    margin-top: 5px;
+    font-size: 18px;
+    color: #002e63;
+    margin-bottom: 5px; /* tarpas po pasisveikinimu */
+}
+
+/* centroja antraštę horizontaliai */
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* nustatomas antraštės aukštis */
+    background-color: rgba(0, 0, 0, 0); /* permatoma fono spalva */
+    margin-bottom: 5px; /* tarpas po antrašte */
+    width: 100%; /* antraštė per visą plotį */
+    position: relative; /* pridedamas pozicionavimas */
+}
+
+/* centruojamas antraštės tekstas */
+header h1 {
+    margin: 0; /* pašalinamas numatytasis margin */
+    font-size: 40px; /* šrifto dydis */
+    color: whitesmoke; /* teksto spalva */
+    position: absolute;
+    left: 50%; /* perkelia į kairę per pusę pločio */
+    transform: translateX(-50%); /* perkelia atgal per pusę pločio */
+    text-align: center; /* teksto centravimas */
+}
+
+/* Užtikrina, kad pagrindinis turinys bus išdėstytas žemiau antraštės */
+main {
+    padding-top: 480px; /* slankioja paveiksliuką */
+}
+
+label, input {
+    display: block;
+}
+span.helptext {
+    display: none;
+}

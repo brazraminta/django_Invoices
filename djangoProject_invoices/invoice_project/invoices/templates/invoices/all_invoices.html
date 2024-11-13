@@ -1,0 +1,289 @@
+<!-- invoices/all_invoices.html -->
+
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAB Indasta sąskaitų registras</title>
+
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/invoice_list_style.css' %}">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4/dist/autoNumeric.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <img src="{% static 'logo_mazas.png' %}" alt="Logo" width="50" height="50">
+            <h1>Gaunamų sąskaitų registras</h1>
+            <button type="button" onclick="location.href='{% url 'dashboard' %}'" style="display: flex; position: relative; justify-content: flex-end;
+                                    padding: 5px 12px; background-color: #00ff00; color: black;">Valdymo skydelis 🏠</button>
+        </div>
+        <!-- filtravimo blokas -->
+        {% block filter_block %}
+        <div class="filter-block">
+            <form id="filter-form" method="get">
+                <div>
+                    <label for="projekto_nr">Projekto Nr.</label>
+                    <input type="text" id="projekto_nr" name="projekto_nr" value="{{ request.GET.projekto_nr }}">
+                </div>
+                <div>
+                    <label for="tiekejas">Tiekėjas</label>
+                    <input type="text" id="tiekejas" name="tiekejas" value="{{ request.GET.tiekejas }}">
+                </div>
+                <div>
+                    <label for="metai">Metai</label>
+                    <select id="metai" name="metai">
+                        {% for value, label in form.metai.field.choices %}
+                            <option value="{{ value }}" {% if request.GET.metai == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="ketvirtis">Ketvirtis</label>
+                    <select id="ketvirtis" name="ketvirtis">
+                        {% for value, label in form.ketvirtis.field.choices %}
+                            <option value="{{ value }}" {% if request.GET.ketvirtis == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="menuo">Mėnuo</label>
+                    <select id="menuo" name="menuo">
+                        {% for value, label in form.menuo.field.choices %}
+                            <option value="{{ value }}" {% if request.GET.menuo == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Mygtukai -->
+                <button type="button" onclick="location.href='{% url 'clear_filters' %}'">Išvalyti filtrus</button>
+                <button type="button" onclick="location.href='{% url 'unpaid_invoices' %}'"
+                        style="display: flex; justify-content: center; align-items: center; padding: 5px 10px;">Neapmokėtos sąskaitos</button>
+                <button type="button" onclick="location.href='{% url 'invoice_list' %}'" style="background-color:
+                                                                #228b22; color: white;">Į pradžią</button>
+            </form>
+        </div>
+        {% endblock filter_block %}
+
+        <!-- sąskaitų lentelė -->
+        <div id="invoice-table">
+            {% include 'invoices/invoice_table.html' %}
+        </div>
+
+        <!-- Bendros sumos rodymas virš lentelės -->
+        <div id="total-sum-container" class="total-sum-container">
+            <strong>Viso suma (be PVM):</strong> <span id="total-sum">{{ total_sum|floatformat:2|intcomma }} €</span>
+        </div>
+    </div>
+
+    <!-- pagrindinis turinys -->
+    {% block content %}
+        {% if invoices %}
+            <table id="invoice-table">
+                <thead>
+                    <tr>
+                        <th class="id-column sortable">ID</th>
+                        <th class="project-column sortable">Projekto Nr.</th>
+                        <th class="notes-column sortable">Tiekėjas</th>
+                        <th class="mid-columns sortable">Sąskaitos Nr.</th>
+                        <th class="mid-columns sortable">Išrašymo data</th>
+                        <th class="mid-columns sortable">Apmokėti iki</th>
+                        <th class="mid-columns sortable">Apmokėjimo data</th>
+                        <th class="mid-columns sortable">Būsena</th>
+                        <th class="id-column sortable">Veiksmas</th>
+                        <th class="project-column sortable">Skubu</th>
+                        <th class="notes-column sortable">Pastabos</th>
+                        <th class="mid-columns sortable">PDF</th>
+                        <th class="sortable">Redaguoti</th>
+                        <th class="sortable">Ištrinti</th>
+                        <th class="sum-column sortable">Suma (be PVM)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                        <tr
+                            class="{% if not invoice.is_active %}inactive{% endif %}"
+                            {% if not invoice.apmoketa_ne and invoice.skubu or not invoice.apmoketa_ne and invoice.apmoketi_iki <= today %}
+                                style="background-color: red;"
+                            {% elif not invoice.apmoketa_ne %} style="background-color: yellow;"
+                            {% endif %}
+                        >
+                        <td class="id-column">{{ invoice.id }}</td>
+                        <td class="project-column">{{ invoice.projekto_nr }}</td>
+                        <td class="notes-column">{{ invoice.tiekejas }}</td>
+                        <td class="mid-columns">{{ invoice.saskaitos_nr }}</td>
+                        <td class="mid-columns">{{ invoice.israsymo_data|date:"Y-m-d" }}</td>
+                        <td class="mid-columns">{{ invoice.apmoketi_iki|date:"Y-m-d" }}</td>
+                        <td class="mid-columns">{{ invoice.apmokejimo_data|date:"Y-m-d" }}</td>
+                        <td class="mid-columns">{{ invoice.apmoketa_ne|yesno:"Apmokėta," }}</td>
+                        <td class="id-column">
+                            {% if not invoice.apmoketa_ne %}
+                                <!-- Mokėjimo patvirtinimo forma -->
+                                <form method="post" action="{% url 'confirm_payment' invoice.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" style="display: block; margin: auto;">Apmokėti</button>
+                                </form>
+                            {% else %}
+                                <!-- Tuščias apskritimas, jei sąskaita jau apmokėta -->
+                                <span style="color: green; font-size: 24px;">&#10004;</span>  <!-- Unicode žalia varnelė -->
+                            {% endif %}
+                        </td>
+                        <td class="project-column">{{ invoice.skubu|yesno:"Skubu," }}</td>
+                        <td class="notes-column">{{ invoice.pastabos|default_if_none:"" }}</td>
+                        <td class="mid-columns">
+                            {% if invoice.pdf_path %}
+                                <a href="{{ invoice.pdf_path }}" target="_blank">Peržiūrėti PDF</a>
+                            {% else %}
+                                {{ invoice.saskaitos_nr|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+
+                        <td style="text-align: center; vertical-align: middle;">
+                            <a href="{% url 'edit_invoice' invoice.id %}" style="display: block; margin: auto;">
+                                <button type="button">Redaguoti</button>
+                            </a>
+                        </td>
+                        <td style="text-align: center; vertical-align: middle;">
+                            <form method="post" action="{% url 'delete_invoice' invoice.id %}" onsubmit="return confirm('Ar tikrai norite ištrinti šią sąskaitą?');">
+                                {% csrf_token %}
+                                <button type="submit" style="display: block; margin: auto;">Ištrinti</button>
+                            </form>
+                        </td>
+                        <td class="sum-column">{{ invoice.suma_be_pvm|floatformat:2|intcomma }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Sąskaitų nerasta.</p>
+        {% endif %}
+    {% endblock content %}
+
+    <!-- puslapio slinkimo į viršų ar į apačią mygtukai -->
+    <button onclick="scrollToTop()" class="scroll-button" id="scrollToTopBtn">⬆️ Į viršų</button>
+    <!-- Scroll to Bottom Button -->
+    <button onclick="scrollToBottom()" class="scroll-button" id="scrollToBottomBtn" style="bottom: 60px;">⬇️ Į apačią</button>
+
+    <script>
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        $(document).ready(function() {
+            $('.select2').select2();
+
+            // Automatically submit form on input change
+            $('form').on('change', 'input, select', function () {
+                $(this).closest('form').submit();
+            });
+
+            function formatNumber(num) {
+                if (isNaN(num)) {
+                    return '0,00';
+                }
+                return num.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
+
+            // Format total sum manually
+            const totalSumElement = document.getElementById('total-sum');
+            let totalSumText = totalSumElement.textContent.replace(/\s/g, '').replace(',', '').replace(' €', '');
+            console.log('Raw total sum text:', totalSumText);
+            let totalSum = parseFloat(totalSumText);
+            console.log('Total sum before formatting:', totalSum);
+            if (isNaN(totalSum)) {
+                totalSumElement.textContent = '0,00 €';
+            } else {
+                totalSumElement.textContent = formatNumber(totalSum) + ' €';
+            }
+            console.log('Total sum after formatting:', totalSumElement.textContent);
+
+            // Initialize autoNumeric field for sum values only
+            document.querySelectorAll('.sum-column').forEach(cell => {
+                if (!cell.classList.contains('header')) {
+                    let valueText = cell.textContent.replace(/\s/g, '').replace(',', '').replace(' €', '');
+                    console.log('Raw cell value:', valueText);
+                    let value = parseFloat(valueText);
+                    console.log('Parsed cell value:', value);  // Patikrinama, ar `parseFloat` veikia tinkamai
+                    if (!isNaN(value)) {
+                        cell.textContent = formatNumber(value);
+                        console.log('Formatted cell value:', cell.textContent);  // Pamatykite galutinę suformatuotą reikšmę
+                    } else {
+                        console.warn('Value could not be parsed:', valueText);  // Jei negali konvertuoti, pateikite įspėjimą
+                    }
+                }
+            });
+
+            // Automatically submit form on input with debounce
+            const applyFilters = debounce(function() {
+                $('#filter-form').submit();
+            }, 2) // 2 ms laukimo laikas
+
+            $('#projekto_nr, #tiekejas').on('input', applyFilters);
+
+            // Table sorting
+            const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+            const comparer = (idx, asc) => (a, b) => {
+                const v1 = getCellValue(asc ? a : b, idx);
+                const v2 = getCellValue(asc ? b : a, idx);
+                const date1 = Date.parse(v1);
+                const date2 = Date.parse(v2);
+                if (!isNaN(date1) && !isNaN(date2)) {
+                    return date1 - date2;
+                }
+                const num1 = parseFloat(v1.replace(/\s/g, '').replace(',', '.'));
+                const num2 = parseFloat(v2.replace(/\s/g, '').replace(',', '.'));
+                if (!isNaN(num1) && !isNaN(num2)) {
+                    return num1 - num2;
+                }
+                return v1.toString().localeCompare(v2);
+            };
+            document.querySelectorAll('th.sortable').forEach(th => th.addEventListener('click', function() {
+                const table = th.closest('table');
+                const tbody = table.querySelector('tbody');
+                Array.from(tbody.querySelectorAll('tr'))
+                    .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+                    .forEach(tr => tbody.appendChild(tr));
+            }));
+
+            // Show or hide the scroll buttons based on scroll position
+            window.onscroll = function() {
+                var scrollToTopBtn = document.getElementById("scrollToTopBtn");
+                var scrollToBottomBtn = document.getElementById("scrollToBottomBtn");
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    scrollToTopBtn.classList.add("show");
+                } else {
+                    scrollToTopBtn.classList.remove("show");
+                }
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 20) {
+                    scrollToBottomBtn.classList.remove("show");
+                } else {
+                    scrollToBottomBtn.classList.add("show");
+                }
+            };
+
+            // Scroll to top function
+            window.scrollToTop = function() {
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            };
+
+            // Scroll to bottom function
+            window.scrollToBottom = function() {
+                window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+            };
+        });
+    </script>
+</body>
+</html>
+

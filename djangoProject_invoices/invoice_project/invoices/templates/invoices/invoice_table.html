@@ -1,0 +1,14 @@
+<!-- invoices/invoice_table.html -->
+
+<tbody>
+{% for invoice in invoices %}
+    <tr>
+        <td>{{ invoice.project_number }}</td>
+        <td>{{ invoice.supplier }}</td>
+        <td>{{ invoice.year }}</td>
+        <td>{{ invoice.quarter }}</td>
+        <td>{{ invoice.month }}</td>
+        <td>{{ invoice.status }}</td>
+    </tr>
+{% endfor %}
+</tbody>

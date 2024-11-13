@@ -1,0 +1,131 @@
+/* register_invoice_style.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 25%; /* formos plotis */
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center; /* centruoja tekstą ir elementus viduje */
+    max-height: 90vh; /* užtikrina, kad forma neviršytų ekrano aukščio */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px; /* tarpas antraštės apačioje */
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-family: Arial, sans-serif;
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.btn {
+    width: 100%; /* užtikrinama, kad laukeliai ir mygtukai užims visą formos plotį */
+    max-width: 500px; /* nustatomas maksimalus plotis laukeliams ir mgtukams */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Checkbox grupių stilius */
+.form-group,
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* kairinis lygiavimas */
+    margin-bottom: 10px; /* Padidintas tarpas tarp laukų */
+}
+
+.form-group label,
+.form-group-checkbox label {
+    flex: 1; /* užtikrinama, kad etiketės užims vienodą plotį */
+    margin-right: 10px;
+    text-align: left; /* kairinis lygiavimas etiketėms */
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.form-group-checkbox input {
+    flex: 1.8; /* užtikrinama, kad įvedimo laukeliai užims likusį plotį */
+    width: 90%; /* užtikrinama, kad laukeliai užims nustatytą plotį */
+}
+
+.form-group-checkbox input {
+    width: auto; /* užtikrina, kad checkbox neužims viso pločio */
+    margin-right: 10px; /* tarpas tarp checkbox ir etiketės */
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.5); /* Didesnis checkbox */
+}
+
+/* Mygtukai */
+.btn {
+    margin-top: 5px; /* tarpas virš mygtukų */
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1; /* užtikrinama, kad mygtukai bus vienodo pločio */
+    text-align: center; /* teksto centravimas mygtukuose */
+}
+
+.btn:hover {
+    background-color: #218838;
+}
+
+/* Mažesni mygtukai */
+.btn-small {
+    margin-top: 10px;
+    display: inline-block;
+    width: auto;
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+.btn-clear {
+    background-color: #dc3545;
+    color: #fff;
+    margin-top: 10px;
+}
+
+.btn-clear:hover {
+    background-color: #c82333;
+}
+
+/* mygtukų grupės stilius */
+.form-buttons {
+    display: flex;
+    justify-content: space-between; /* užtikrinama, kad mygtukai bus vienoje linijoje */
+    align-items: center; /* centruoja mygtukus vertikaliai */
+    gap: 10px; /* tarpas tarp mygtukų */
+}
+
+.form-buttons .btn {
+    flex-grow: 1; /* užtikrina, kad mygtukai bus vienodo pločio */
+}

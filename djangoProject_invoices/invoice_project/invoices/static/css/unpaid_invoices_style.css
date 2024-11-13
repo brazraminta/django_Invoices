@@ -1,0 +1,109 @@
+/* invoices/unpaid_invoices_style.css */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border-spacing: 0;
+    table-layout: auto;
+}
+
+.header-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+.header img {
+    margin-right: 5px;  /* tarpas tarp paveikslėlio ir antraštės */
+}
+
+.header-container h1 {
+    margin: 0;
+}
+
+.header-container form,
+.header-container button {
+    margin-left: 10px; /* tarpas tarp mygtukų */
+}
+
+.header-container button,
+.header-container form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #8fbc8f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.header-container form button {
+    background-color: #8fbc8f;
+    color: white;
+}
+.header-container form button:hover {
+    background-color: #1e7e34;
+}
+
+[name="filter"][value="non-urgent"] {
+    background-color: #fdee00;
+    color: #000000;
+}
+
+[name="filter"][value="urgent"] {
+    background-color: #ff0000;
+    color: #000000;
+}
+
+th {
+    text-align: center;  /* antraščių centravimas */
+    background-color: #f2f2f2;
+}
+
+th.sortable {
+    cursor: pointer;
+}
+
+th.sortable:hover {
+    background-color: #ddd;
+}
+
+/* id stulpelio dydis */
+.id-column {
+    width: 50px;
+    text-align: center;
+}
+
+/* projekto nr ir skubu stulpelio dydis */
+.project-column {
+    width: 90px;
+    text-align: center;
+}
+
+/* saskaitos nr, datų, apmokėjimo būsenos stulpelių dydis */
+.mid-columns {
+    width: 130px;
+    text-align: center;
+}
+
+/* tiekėjo ir pastabų stulpelių dydis */
+.notes-column {
+    width: 300px;
+    max_width: 300px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.sum-column {
+    text-align: center;
+    width: 130px;
+    white-space: nowrap;
+}
+
+.total-sum-container {
+    border: 2px solid #fff0f0;
+    padding: 10px;
+    background-color: #fff0f0;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-align: right;
+}

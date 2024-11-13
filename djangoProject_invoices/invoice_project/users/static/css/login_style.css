@@ -1,0 +1,91 @@
+/* users/login_style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+/* administratoriaus prisijungimo laukeliai */
+.container {
+    width: 25%; /* formos plotis */
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center; /* centruoja tekstą ir elementus viduje */
+    max-height: 90vh; /* užtikrina, kad forma neviršytų ekrano aukščio */
+    position: relative;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px; /* tarpas antraštės apačioje */
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-family: Arial, sans-serif;
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.btn {
+    width: 100%; /* užtikrinama, kad laukeliai ir mygtukai užims visą formos plotį */
+    max-width: 500px; /* nustatomas maksimalus plotis laukeliams ir mygtukams */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Mygtukai */
+.btn {
+    margin-top: 10px; /* tarpas virš mygtukų */
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #007aa5;
+    color: #fff0f0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center; /* teksto centravimas mygtukuose */
+}
+
+.btn:hover {
+    background-color: #0047ab;
+}
+
+/* Mažesni mygtukai */
+.btn-small {
+    margin-top: 10px;
+    display: inline-block;
+    width: auto;
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+/* Stilius login mygtukams viršutiniame dešiniajame kampe */
+.login-buttons {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+#admin-login-form {
+    display: none;
+}

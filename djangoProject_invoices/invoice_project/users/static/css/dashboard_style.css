@@ -1,0 +1,46 @@
+/* users/dashboard_style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+h4 {
+    font-size: 20px;
+}
+
+/* Stilius login mygtukams viršutiniame dešiniajame kampe */
+.login-buttons {
+    position: absolute;
+    top: 25px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    height: 50px;
+}
+
+.btn {
+    margin-top: 10px; /* Prideda 10 pikselių tarpą virš mygtuko */
+    display: inline-block; /* Užtikrina, kad mygtukas bus rodomas kaip eilutės elementas, bet su bloko savybėmis */
+    padding: 5px 10px; /* Prideda 5 pikselių tarpą vertikaliai ir 10 pikselių horizontaliai viduje mygtuko */
+    background-color: #007aa5; /* Nustato mygtuko fono spalvą */
+    color: #fff0f0; /* Nustato teksto spalvą */
+    border: none; /* Pašalina numatytąjį mygtuko rėmelį */
+    border-radius: 4px; /* Užapvalina mygtuko kampus 4 pikseliais */
+    cursor: pointer; /* Pakeičia pelės žymeklį į rodyklę, kai jis yra virš mygtuko */
+    font-size: 16px; /* Nustato teksto dydį mygtuke */
+    text-align: center; /* Centruoja tekstą horizontaliai mygtuko viduje */
+    align-items: center;
+    justify-content: center;
+}
+
+.btn:hover {
+    background-color: #0047ab;
+}
+
+
+
+

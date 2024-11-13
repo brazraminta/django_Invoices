@@ -1,0 +1,40 @@
+<!--/users/dashboard.html-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_style.css' %}">
+<link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+{% endblock %}
+
+{% block welcome_message %}
+    {% if user.is_authenticated %}
+        <h4>Sveiki, {{ user.username }}!</h4>
+        {% else %}
+            <h3>Sveiki, Svečias!</h3>
+        {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="login-buttons">
+        {% if user.is_authenticated %}
+            <button type="button" class="btn" onclick="window.location.href='{% url 'invoice_list' %}'">Sąskaitų registras</button>
+            <button type="button" class="btn" onclick="location.href='{% url 'create_invoice' %}'">Sąskaitos išrašymas</button>
+            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+            </form>
+{#            <button type="button" class="btn" onclick="document.getElementById('logout-form').submit();">Atsijungti</button>#}
+            <button type="submit" class="btn" form="logout-form">Atsijungti</button>
+            {#            <button type="button" class="btn" onclick="window.location.href='{% url 'password_change' %}'">Keisti slaptažodį</button>#}
+    {#      <button type="button" class="vertical-button" onclick="window.location.href='{% url 'password_reset' %}'">Atstatyti slaptažodį</button>#}
+        {% else %}
+            <button type="button" class="btn" onclick="window.location.href='{% url 'login' %}'">Prisijungti</button>
+        {% endif %}
+
+        {% if user.is_superuser %}
+            <a href="{% url 'download_backup' %}" class="btn">Atsisiųsti atsarginę duomenų bazės kopiją</a>
+        {% endif %}
+    </div>
+{% endblock %}
+

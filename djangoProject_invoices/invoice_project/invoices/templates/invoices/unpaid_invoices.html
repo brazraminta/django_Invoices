@@ -1,0 +1,187 @@
+<!-- invoices/unpaid_invoices.html -->
+
+{% load static %}
+{% load humanize %}  <!-- reikalingas dėl 'intcomma' filtrui -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>UAB Indasta sąskaitų registras</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/invoice_list_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/unpaid_invoices_style.css' %}">
+</head>
+<body>
+    <div class="content-container">
+        <div class="header-container">
+            <img src="{% static 'logo_mazas.png' %}" alt="Logo" width="50" height="50">
+            <h1>Neapmokėtos sąskaitos</h1>
+
+            <form method="get" action="{% url 'unpaid_invoices' %}">
+                <button type="submit" name="filter" value="non-urgent">Neskubūs mokėjimai</button>
+                <button type="submit" name="filter" value="urgent">Skubūs/ pradelsti mokėjimai</button>
+                <button type="submit" name="filter" value="all">Visi mokėjimai</button>
+            </form>
+
+            <form method="get" action="{% url 'export_invoices_to_excel' %}">
+                <input type="hidden" name="filter" value="{{ request.GET.filter }}">
+                <button type="submit">Eksportuoti į Excel</button>
+            </form>
+            <button type="button" onclick="location.href='{% url 'invoice_list' %}'">Į pradžią</button>
+        </div>
+
+        <!-- sąskaitų lentelė -->
+        <div id="invoice-table">
+            {% include 'invoices/invoice_table.html' %}
+        </div>
+
+        <!-- Bendros sumos rodymas virš lentelės -->
+        <div id="total-sum-container" class="total-sum-container">
+            <strong>Viso suma (be PVM):</strong> <span id="total-sum">{{ total_sum|floatformat:2|intcomma }} €</span>
+        </div>
+    </div>
+
+    <!-- pagrindinis turinys -->
+    {% block content %}
+        {% if invoices %}
+            <table id="invoice-table">
+                <thead>
+                    <tr>
+                        <th class="id-column sortable">ID</th>
+                        <th class="project-column sortable">Projekto Nr.</th>
+                        <th class="notes-column sortable">Tiekėjas</th>
+                        <th class="mid-columns sortable">Sąskaitos Nr.</th>
+                        <th class="mid-columns sortable">Išrašymo data</th>
+                        <th class="mid-columns sortable">Apmokėti iki</th>
+                        <th class="mid-columns sortable">Apmokėjimo data</th>
+                        <th class="mid-columns sortable">Būsena</th>
+                        <th class="id-column sortable">Veiksmas</th>
+                        <th class="project-column sortable">Skubu</th>
+                        <th class="notes-column sortable">Pastabos</th>
+                        <th class="mid-columns sortable">PDF</th>
+                        <th class="sortable">Redaguoti</th>
+                        <th class="sortable">Ištrinti</th>
+                        <th class="sum-column sortable">Suma (be PVM)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                        <tr style="background-color: {{ invoice.color }};">
+                        <td class="id-column">{{ invoice.id }}</td>
+                        <td class="project-column">{{ invoice.projekto_nr }}</td>
+                        <td class="notes-column">{{ invoice.tiekejas }}</td>
+                        <td class="mid-columns">{{ invoice.saskaitos_nr|default_if_none:"" }}</td>
+                        <td class="mid-columns">{{ invoice.israsymo_data|date:"Y-m-d" }}</td>
+                        <td class="mid-columns">{{ invoice.apmoketi_iki|date:"Y-m-d" }}</td>
+                        <td class="mid-columns">{{ invoice.apmokejimo_data|date:"Y-m-d" }}</td>
+                        <td class="mid-columns">{{ invoice.apmoketa_ne|yesno:"Apmokėta," }}</td>
+                        <td class="id-column">
+                            {% if not invoice.apmoketa_ne %}
+                                <!-- Mokėjimo patvirtinimo forma -->
+                                <form method="post" action="{% url 'confirm_payment' invoice.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" style="display: block; margin: auto;">Apmokėti</button>
+                                </form>
+                            {% else %}
+                                <!-- Tuščias apskritimas, jei sąskaita jau apmokėta -->
+                                <span style="color: green; font-size: 24px;">&#10004;</span>  <!-- Unicode žalia varnelė -->
+                            {% endif %}
+                        </td>
+                        <td class="project-column">{{ invoice.skubu|yesno:"Skubu," }}</td>
+                        <td class="notes-column">{{ invoice.pastabos|default_if_none:"" }}</td>
+                        <td class="mid-columns">
+                            {% if invoice.pdf_path %}
+                                <a href="{{ invoice.pdf_path }}" target="_blank">Peržiūrėti PDF</a>
+                            {% else %}
+                                {{ invoice.saskaitos_nr|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                        <!-- Redagavimo forma -->
+                        <td style="text-align: center; vertical-align: middle;">
+                            <a href="{% url 'edit_invoice' invoice.id %}" style="display: block; margin: auto;">
+                                <button type="button">Redaguoti</button>
+                            </a>
+                        </td>
+                        <!-- Ištrynimo forma -->
+                        <td style="text-align: center; vertical-align: middle;">
+                            <form method="post" action="{% url 'delete_invoice' invoice.id %}" onsubmit="return confirm('Ar tikrai norite ištrinti šią sąskaitą?');">
+                                {% csrf_token %}
+                                <button type="submit" style="display: block; margin: auto;">Ištrinti</button>
+                            </form>
+                        </td>
+                        <td class="sum-column">{{ invoice.suma_be_pvm|floatformat:2|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Sąskaitų nerasta.</p>
+        {% endif %}
+    {% endblock content %}
+
+    {% block extra_js %}
+    <script>
+        function formatNumber(num) {
+            if (isNaN(num)) {
+                return '0,00';
+            }
+            return num.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var nonUrgentButton = document.getElementById('filter-non-urgent');
+            var urgentButton = document.getElementById('filter-urgent');
+
+            if (nonUrgentButton) {
+                nonUrgentButton.addEventListener('click', function() {
+                    filterInvoices('yellow');
+                });
+            }
+
+            if (urgentButton) {
+                urgentButton.addEventListener('click', function() {
+                    filterInvoices('red');
+                });
+            }
+
+            function filterInvoices(color) {
+                var rows = document.querySelectorAll('#invoice-table tbody tr');
+                rows.forEach(function(row) {
+                    if (row.style.backgroundColor === color) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            // Format total sum manually
+            const totalSumElement = document.getElementById('total-sum');
+            let totalSumText = totalSumElement.textContent.replace(/\s/g, '').replace(',', '').replace(' €', '');
+            console.log('Raw total sum text:', totalSumText);
+            let totalSum = parseFloat(totalSumText);
+            console.log('Total sum before formatting:', totalSum);
+            if (isNaN(totalSum)) {
+                totalSumElement.textContent = '0,00 €';
+            } else {
+                totalSumElement.textContent = formatNumber(totalSum) + ' €';
+            }
+            console.log('Total sum after formatting:', totalSumElement.textContent);
+
+            // Format sum values in the table
+            document.querySelectorAll('.sum-column').forEach(cell => {
+                let valueText = cell.textContent.replace(/\s/g, '').replace(',', '').replace(' €', '');
+                let value = parseFloat(valueText);
+                if (!isNaN(value)) {
+                    cell.textContent = formatNumber(value) + ' €';
+                }
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>
+
+

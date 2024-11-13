@@ -1,0 +1,15 @@
+<!--users/templates/users/register.html-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Registruotis</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{form}}
+    <button type="submit" value="Register"></button>
+</form>
+
+<a href="{% url 'login' %}">Grįžti prisijungti</a>
+{% endblock %}

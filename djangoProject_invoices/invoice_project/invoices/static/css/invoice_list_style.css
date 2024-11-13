@@ -1,0 +1,205 @@
+/* invoice_list_style.css' */
+
+/* Flex konteineris antraštei ir mygtukui */
+.header-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.header-container h1 {
+    margin: 0;
+}
+.header img {
+    margin-right: 5px;  /* tarpas tarp paveikslėlio ir antraštės */
+}
+.header-container form,
+.header-container button {
+    margin-left: 10px; /* tarpas tarp mygtukų */
+}
+
+.header-container button,
+.header-container form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #228b22;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.header-container form button {
+    background-color: #007bff;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px; /* tarpas antraštės apačioje */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border-spacing: 0;
+    table-layout: auto;
+}
+
+th, td {
+    border: 1px solid black; /* lentelės rėmeliai */
+    padding: 5px 10px; /* 5px - vertikalus tarpas tarp turinio ir langelio kraštų, 10px - horizontalus */
+    text-align: left;
+    line-height: 1.2; /* eilučių aukštis */
+    word-wrap: break-word;
+}
+
+th {
+    text-align: center;  /* antraščių centravimas */
+    background-color: #f2f2f2;
+}
+
+th.sortable {
+    cursor: pointer;
+}
+
+th.sortable:hover {
+    background-color: #ddd;
+}
+
+/* filtravimo blokas */
+.filter-block {
+    display: flex;
+    flex-wrap: wrap; /* užtikrina, kad elementai tilps į vieną eilutę */
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 5px;
+    background-color: #f9f9f9;
+    margin-bottom: 5px;
+    gap: 10px; /* atstumas tarp elementų */
+    align-items: center;
+}
+
+.filter-block form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* tarpas tarp laukelių */
+    align-items: center;
+}
+
+/* filtravimo laukeliai */
+.filter-block label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.filter-block input,
+.filter-block select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex: 1 1 200px; /* užtikrinama, kad laukeliai būtų vienodo pločio ir prisitaikytų prie ekrano dydžio */
+}
+
+/* filtrų išvalymo, neapmokėtų ir visų sąskaitų mygtukai */
+.filter-block button {
+    padding: 10px 20px;
+    background-color: #8fbc8f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex: 1 1 100px; /* užtikrinama, kad filtrų valymo mygtukas būtų vienodo pločio su laukeliais */
+    height: 40px;
+    margin-top: 10px;
+    text-align: center; /* mygtuko teksto centravimas horizontaliai */
+    vertical-align: middle; /* mygtuko teksto centravimas vertikaliai */
+}
+
+.filter-block button:hover {
+    background-color: #0056b3;
+}
+
+form label {
+    margin-right: 10px; /* tarpas tarp etiketės ir laukelio */
+}
+
+form input,
+form select {
+    margin-bottom: 15px; /* tarpas laukelių apačioje */
+    margin-right: 20px; /* tarpas tarp laukelių */
+    box-sizing: border-box;
+}
+
+form button {
+    margin-top: 20px; /* tarpas virš mygtuko */
+}
+
+/* id stulpelio dydis */
+.id-column {
+    width: 50px;
+    text-align: center;
+}
+
+/* projekto nr ir skubu stulpelio dydis */
+.project-column {
+    width: 90px;
+    text-align: center;
+}
+
+/* saskaitos nr, datų, apmokėjimo būsenos stulpelių dydis */
+.mid-columns {
+    width: 130px;
+    text-align: center;
+}
+
+/* tiekėjo ir pastabų stulpelių dydis */
+.notes-column {
+    width: 300px;
+    max_width: 300px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* puslapio slinkimo mygtukai */
+.scroll-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;  /* pradinė būsena: paslėptas */
+}
+
+.scroll-button.show {
+    display: block;  /* rodomas tik kai reikia */
+}
+
+#invoice-table {
+    margin-top: 4px; /* tarpas virš lentelės */
+}
+
+.sum-column {
+    text-align: center;
+    width: 130px;
+    white-space: nowrap;
+}
+
+.total-sum-container {
+    border: 2px solid #fff0f0;
+    padding: 10px;
+    background-color: #fff0f0;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-align: right;
+}
+
+.inactive {
+    color: gray;
+    text-decoration: line-through;
+}

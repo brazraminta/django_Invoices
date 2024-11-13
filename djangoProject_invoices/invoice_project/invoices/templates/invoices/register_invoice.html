@@ -1,0 +1,173 @@
+<!-- register_invoice.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAB Indasta sąskaitų registras</title>
+
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/register_invoice_style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4/dist/autoNumeric.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Sąskaitos registracija</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- pranešimai apie klaidas vartotojui -->
+            {% if form.errors %}
+                <div class="form-errors">
+                    {{ form.non_field_errors }}
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <!-- pagrindiniai duomenų įvedimo laukeliai -->
+            <div class="form-group">
+                {{ form.projekto_nr.label_tag }}
+                {{ form.projekto_nr }}
+            </div>
+            <div class="form-group">
+                {{ form.tiekejas.label_tag }}
+                {{ form.tiekejas }}
+            </div>
+            <div class="form-group">
+                {{ form.saskaitos_nr.label_tag }} {{ form.saskaitos_nr }}
+            </div>
+            <div class="form-group">
+                {{ form.israsymo_data.label_tag }} {{ form.israsymo_data }}
+            </div>
+            <div class="form-group">
+                {{ form.apmoketi_iki.label_tag }} {{ form.apmoketi_iki }}
+            </div>
+            <div class="form-group">
+                {{ form.apmokejimo_data.label_tag }} {{ form.apmokejimo_data }}
+            </div>
+            <div class="form-group">
+                {{ form.suma_be_pvm.label_tag }} {{ form.suma_be_pvm }}
+            </div>
+            <div class="form-group-checkbox">
+                {{ form.apmoketa_ne.label_tag }} {{ form.apmoketa_ne }}
+            </div>
+            <div class="form-group-checkbox">
+                {{ form.skubu.label_tag }} {{ form.skubu }}
+            </div>
+            <div class="form-group-checkbox">
+                {{ form.pastabos.label_tag }} {{ form.pastabos }}
+            </div>
+            <div class="form-group">
+                <label for="document_selector">Pasirinkite dokumentą</label>
+                <select id="document_selector" name="document_selector">
+                    {% for document in documents %}
+                        <option value="{{ document.id }}">{{ document.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-small">Išsaugoti</button>
+                <button type="button" class="btn btn-clear btn-small" onclick="window.location.href='/invoices/'">Uždaryti langą</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        {#$(document).ready(function() {#}
+        $(window).on('load', function() {
+            function initializeSelect2(selector, url, initialValue) {
+                $(selector).select2({
+                    tags: true,
+                    createTag: function(params) {
+                        var term = $.trim(params.term);
+                        if (term === '') {
+                            return null;
+                        }
+                        return {
+                            id: term,
+                            text: term,
+                            newTag: true
+                        };
+                    },
+                    allowClear: true,
+                    placeholder: 'Pasirinkite arba įveskite naują reikšmę',
+                    ajax: {
+                        url: url,
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                term: params.term
+                            };
+                        },
+                        processResults: function(data) {
+                            return {
+                                results: $.map(data.results, function(item) {
+                                    return {
+                                        id: item.id,
+                                        text: item.text
+                                    };
+                                })
+                            };
+                        },
+                        cache: true
+                    }
+                }).on('select2:unselect', function(e) {
+                    $(this).val(null).trigger('change');
+                }).on('select2:select', function(e) {
+                    var data = e.params.data;
+                    if (data.newTag) {
+                        $(this).append(new Option(data.text, data.id, true, true)).trigger('change');
+                    } else {
+                        $(this).find('option').each(function() {
+                            if ($(this).val() === data.id) {
+                                $(this).prop('selected', true).trigger('change');
+                            }
+                        });
+                    }
+                });
+
+                if (initialValue) {
+                    var option = new Option(initialValue, initialValue, true, true);
+                    $(selector).append(option).trigger('change');
+                    $(selector).val(initialValue).trigger('change');
+                }
+            }
+            initializeSelect2('#id_projekto_nr', '{% url "filter_projects" %}', '{{ form.projekto_nr.value|default_if_none:"" }}');
+            initializeSelect2('#id_tiekejas', '{% url "filter_suppliers" %}', '{{ form.tiekejas.value|default_if_none:"" }}');
+
+            // Inicializuojamas autoNumeric laukas
+            new AutoNumeric('.mid-columns', {
+                digitGroupSeparator: ' ',
+                decimalCharacter: ',',
+                decimalPlaces: 2,
+                currencySymbol: '€',
+                currencySymbolPlacement: 's',
+                unformatOnSubmit: true,
+                decimalCharacterAlternative: '.'
+            });
+
+            // kai pažymimas checkbox 'Apmokėta'
+            $('form').submit(function(event) {
+                if ($('#id_apmoketa_ne').is(':checked')) {
+                    alert('Checkbox pažymėtas');
+                    if (!$('#id_apmokejimo_data').val()) {
+                        alert('Įveskite apmokėjimo datą.');
+                        event.preventDefault(); // sustabdomas formos pateikimas
+                        $('#id_apmokejimo_data').focus();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

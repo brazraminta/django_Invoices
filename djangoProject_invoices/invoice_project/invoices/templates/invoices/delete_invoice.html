@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UAB Indasta sąskaitų registras</title>
+</head>
+<body>
+    <h1>Ar tikrai norite ištrinti sąskaitą {{ invoice.saskaitos_nr }}?</h1>
+    <form method="post">
+        {% csrf token %}
+        <button type="submit">Taip, ištrinti</button>
+    </form>
+    <a href="{% url 'invoice_list' %}">Atšaukti</a>
+</body>
+</html>
